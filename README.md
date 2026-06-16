@@ -46,106 +46,100 @@ Untuk menjalankan fitur analisis AI, aplikasi memerlukan file bobot model terlat
 
 ---
 
-## ⚙️ Petunjuk Setup Environment
+## 🚀 Panduan Setup & Menjalankan Aplikasi Secara Lokal
 
-Ikuti langkah-langkah di bawah ini untuk menyiapkan lingkungan kerja sebelum menjalankan aplikasi secara lokal:
+Ikuti langkah-langkah di bawah ini secara berurutan untuk menyiapkan lingkungan kerja dan menjalankan aplikasi di komputer Anda:
 
-### 1. Prasyarat Sistem (Hanya untuk OS Windows Lokal)
-Jika dijalankan langsung secara lokal di OS Windows, pastikan Anda telah menyiapkan dependensi eksternal berikut:
-- **Instal Tesseract OCR:** 
-  Download installer Tesseract OCR untuk Windows, jalankan instalasi, dan sesuaikan path program executable di komputer Anda pada file `backend/ekstraksi_pdf.py` baris 14:
-  ```python
-  pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-  ```
-- **Instal Poppler Utils:** 
-  Download file zip Poppler untuk Windows, ekstrak, dan sesuaikan path folder bin di komputer Anda pada file `backend/ekstraksi_pdf.py` baris 13:
-  ```python
-  POPPLER_PATH = r'C:\Program Files\poppler-26.02.0\Library\bin'
-  ```
-- **Instal MongoDB:** 
-  Instal MongoDB Community Server lokal dan pastikan layanannya berjalan di port default `27017`.
+### Langkah 1: Siapkan Prasyarat Sistem (Hanya untuk OS Windows Lokal)
+Jika dijalankan langsung secara lokal di Windows (bukan Docker), Anda perlu menyiapkan dependensi berikut terlebih dahulu:
+- **Instal Tesseract OCR**:
+  - Unduh installer dari [Tesseract OCR Windows](https://github.com/UB-Mannheim/tesseract/wiki).
+  - Jalankan instalasi.
+  - Sesuaikan jalur program executable pada file [backend/ekstraksi_pdf.py](backend/ekstraksi_pdf.py#L14) (default: `C:\Program Files\Tesseract-OCR\tesseract.exe`).
+- **Instal Poppler Utils**:
+  - Unduh file ZIP dari [Poppler for Windows](https://github.com/oschwartz10612/poppler-windows/releases).
+  - Ekstrak file tersebut (misalnya ke `C:\Program Files\poppler-26.02.0`).
+  - Sesuaikan jalur folder `bin` pada file [backend/ekstraksi_pdf.py](backend/ekstraksi_pdf.py#L13) (default: `C:\Program Files\poppler-26.02.0\Library\bin`).
+- **Instal & Jalankan MongoDB**:
+  - Unduh dan instal [MongoDB Community Server](https://www.mongodb.com/try/download/community).
+  - Pastikan layanan MongoDB lokal Anda sudah aktif dan berjalan di port default `27017`.
 
-*(Catatan: Langkah prasyarat sistem Windows ini tidak diperlukan jika Anda menggunakan Docker, karena Tesseract, Poppler, dan MongoDB otomatis terinstal dan terkonfigurasi secara otomatis di dalam container).*
+*(Catatan: Langkah prasyarat sistem Windows ini tidak diperlukan jika Anda menggunakan Docker, karena Tesseract, Poppler, dan MongoDB otomatis terinstal dan berjalan di dalam container).*
 
-### 2. Setup Database & Akun MongoDB
-Pastikan layanan MongoDB berjalan secara lokal di port `27017`. Aplikasi backend akan otomatis membuat database bernama `quick_hire` saat dijalankan pertama kali.
+### Langkah 2: Unduh dan Siapkan Berkas Model `best.pt`
+1. Unduh berkas bobot model terlatih `best.pt` (~500 MB) melalui Google Drive:
+   👉 **[Download best.pt (Google Drive)](https://drive.google.com/file/d/1uVaXEthrhJNDm0rqZc2qNO1tMuohsxTG)**
+2. Letakkan file model tersebut langsung di dalam direktori `backend/` sehingga jalurnya menjadi `backend/best.pt`.
 
-### 3. Setup Python Virtual Environment (Backend)
-1. Masuk ke direktori backend:
+### Langkah 3: Konfigurasi & Jalankan Backend (Flask API)
+1. Buka terminal baru dan masuk ke direktori `backend`:
    ```bash
    cd backend
    ```
-2. Buat Virtual Environment:
-   ```bash
-   python -m venv .venv
-   ```
-3. Aktifkan Virtual Environment:
-   - **Windows (PowerShell):** `.venv\Scripts\Activate.ps1`
-   - **Windows (CMD):** `.venv\Scripts\activate.bat`
-   - **macOS/Linux:** `source .venv/bin/activate`
-4. Pasang semua dependensi Python:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-### 4. Setup Node.js (Frontend)
-1. Masuk ke direktori Frontend:
-   ```bash
-   cd ../Frontend
-   ```
-2. Pasang semua dependensi npm:
-   ```bash
-   npm install
-   ```
-
-### 5. Setup Konfigurasi API (Frontend - Opsional)
-Secara default, Frontend React akan terhubung ke API backend lokal di `http://127.0.0.1:5000`. Jika Anda ingin mengubah URL server backend (misal ketika dideploy), buat file `.env` di dalam folder `Frontend/` dan isi:
-```env
-REACT_APP_API_URL=http://localhost:5000
-```
-
-
----
-
-## 🏃 Cara Menjalankan Aplikasi
-
-Aplikasi dapat dijalankan secara lokal (manual) atau menggunakan container Docker.
-
-### Opsi A: Menjalankan Secara Lokal (Manual)
-
-#### 1. Jalankan Backend
-1. Masuk ke folder `backend` dan pastikan virtual environment aktif.
-2. Buat file `.env` di dalam folder `backend/` dengan isi berikut:
+2. Buat file bernama `.env` di dalam direktori `backend/` dan masukkan konfigurasi berikut:
    ```env
    MONGO_URI=mongodb://localhost:27017/
    SECRET_KEY=thisismysecretkey123
    FLASK_ENV=development
    FLASK_DEBUG=True
    ```
-3. Jalankan server Flask API:
+3. Buat Python Virtual Environment:
+   ```bash
+   python -m venv .venv
+   ```
+4. Aktifkan Virtual Environment:
+   - **Windows (PowerShell):** `.venv\Scripts\Activate.ps1`
+   - **Windows (CMD):** `.venv\Scripts\activate.bat`
+   - **macOS/Linux:** `source .venv/bin/activate`
+5. Pasang semua dependensi Python:
+   ```bash
+   pip install -r requirements.txt
+   ```
+6. Jalankan server Flask API:
    ```bash
    python app.py
    ```
-   *Backend API akan aktif dan berjalan di `http://localhost:5000`*
+   *Backend API akan aktif dan berjalan di `http://localhost:5000`.*
 
-#### 2. Jalankan Frontend
-1. Buka terminal baru dan masuk ke folder `Frontend`.
-2. Jalankan server development React:
+### Langkah 4: Konfigurasi & Jalankan Frontend (React)
+1. Buka terminal baru (biarkan terminal backend di Langkah 3 tetap aktif) dan masuk ke direktori `Frontend`:
+   ```bash
+   cd Frontend
+   ```
+2. *(Opsional)* Jika Anda ingin mengubah URL target server backend, buat file `.env` di dalam folder `Frontend/` dan isi:
+   ```env
+   REACT_APP_API_URL=http://localhost:5000
+   ```
+3. Pasang semua dependensi npm:
+   ```bash
+   npm install
+   ```
+4. Jalankan server development React:
    ```bash
    npm start
    ```
-   *Aplikasi web client akan otomatis terbuka di browser Anda pada alamat `http://localhost:3000`*
+   *Aplikasi web client akan otomatis terbuka di browser Anda pada alamat `http://localhost:3000`.*
 
 ---
 
-### Opsi B: Menjalankan Menggunakan Docker (Rekomendasi Deployment)
+## 🐳 Opsi Alternatif: Menjalankan Menggunakan Docker (Rekomendasi Cepat)
 
-Untuk menjalankan seluruh stack backend (Flask + Tesseract + Poppler) beserta database MongoDB lokal secara instan tanpa perlu setup manual, gunakan Docker Compose:
+Jika Anda ingin menjalankan seluruh stack backend (Flask + Tesseract + Poppler) beserta database MongoDB lokal secara instan tanpa perlu instalasi sistem manual:
 
-1. Pastikan Docker Desktop sudah terinstal dan aktif.
-2. Masuk ke folder `backend/`.
-3. Jalankan perintah:
+1. Pastikan **Docker Desktop** sudah terinstal dan aktif di komputer Anda.
+2. Pastikan file model `best.pt` sudah diletakkan di dalam folder `backend/` (`backend/best.pt`).
+3. Masuk ke folder `backend` lewat terminal:
+   ```bash
+   cd backend
+   ```
+4. Jalankan perintah Docker Compose:
    ```bash
    docker-compose up -d --build
    ```
-4. Kontainer database MongoDB dan Flask API akan aktif dan berjalan di port `5000`. Anda tinggal menjalankan Frontend React secara lokal atau men-deploy-nya ke hosting statis.
+   *Kontainer database MongoDB dan Flask API akan aktif dan berjalan di port `5000`.*
+5. Buka terminal baru, masuk ke folder `Frontend`, dan jalankan React:
+   ```bash
+   cd Frontend
+   npm install
+   npm start
+   ```
