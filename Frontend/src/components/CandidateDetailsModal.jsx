@@ -1,5 +1,6 @@
 import React from 'react';
 import ScoreRing from './ScoreRing';
+import API_BASE_URL from '../config/api';
 
 const CandidateDetailsModal = ({
   candidate,
@@ -9,6 +10,8 @@ const CandidateDetailsModal = ({
   jobDescRaw
 }) => {
   if (!candidate) return null;
+
+  const pdfUrl = `${API_BASE_URL}/api/cvs/${encodeURIComponent(candidate.filename)}`;
 
   // Extract skills and experience
   const { required, matched, missing, candidateSkills } = extractSkills(jobDescRaw, candidate.text_preview);
@@ -113,11 +116,26 @@ const CandidateDetailsModal = ({
               )}
             </div>
 
-            {/* CV Text Preview */}
-            <div className="flex flex-col gap-2 flex-grow">
-              <h4 className="text-xs text-gray-400 uppercase tracking-wider">Teks CV Terdeteksi</h4>
-              <div className="bg-[#121212] border border-white/5 rounded-xl p-4 text-xs font-mono text-gray-400 overflow-y-auto max-h-[250px] leading-relaxed whitespace-pre-wrap">
-                {candidate.text_preview}
+            {/* CV Document View */}
+            <div className="flex flex-col gap-2 flex-grow min-h-[400px]">
+              <div className="flex justify-between items-center">
+                <h4 className="text-xs text-gray-400 uppercase tracking-wider">Dokumen CV Asli</h4>
+                <a 
+                  href={pdfUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs text-[#7FE252] hover:underline flex items-center gap-1 font-medium"
+                >
+                  Buka di Tab Baru ↗
+                </a>
+              </div>
+              <div className="bg-[#121212] border border-white/5 rounded-xl overflow-hidden flex-grow h-full min-h-[350px]">
+                <iframe 
+                  src={pdfUrl} 
+                  title={`CV - ${candidate.name}`}
+                  className="w-full h-full border-none"
+                  style={{ background: '#121212' }}
+                />
               </div>
             </div>
 

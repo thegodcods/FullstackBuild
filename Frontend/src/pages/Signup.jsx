@@ -122,26 +122,113 @@ const Signup = ({ setCurrentPage }) => {
         </div>
       </div>
 
-      {/* Right Side: Visual Graph */}
+      {/* Right Side: Visual Whirlpool */}
       <div className="hidden lg:flex w-1/2 bg-black items-center justify-center relative overflow-hidden border-l border-white/5">
-         <div className="relative w-[500px] h-[500px]">
-            {[...Array(40)].map((_, i) => (
-               <div 
-                 key={i} 
-                 className="absolute top-1/2 left-1/2 h-px bg-white/10 origin-left"
-                 style={{ 
-                   width: `${Math.random() * 200 + 50}px`,
-                   transform: `rotate(${i * 9}deg)`,
-                 }}
-               />
-            ))}
-            <span className="absolute top-1/4 left-1/4 text-[#7FE252] text-2xl font-light">Data Analyst</span>
-            <span className="absolute bottom-1/3 left-1/4 text-[#7FE252] text-2xl font-light">Graphic Designer</span>
-            <span className="absolute bottom-1/4 left-1/3 ml-10 text-[#7FE252] text-2xl font-light">Digital Marketing</span>
-            <span className="absolute top-1/3 right-10 text-[#7FE252] text-2xl font-light">Software Developer</span>
-            <span className="absolute bottom-1/3 right-1/4 mr-10 text-[#7FE252] text-2xl font-light">Accounting</span>
-            <div className="absolute top-1/2 left-1/2 w-1 h-1 bg-[#7FE252] rounded-full shadow-[0_0_20px_#7FE252] transform -translate-x-1/2 -translate-y-1/2"></div>
-         </div>
+        <style>{`
+          @keyframes spiralSink {
+            0% {
+              transform: rotate(var(--angle)) translate(240px) rotate(calc(-1 * var(--angle))) scale(1.15);
+              opacity: 0;
+              filter: blur(1.5px);
+            }
+            15% {
+              opacity: 0.95;
+              filter: blur(0px);
+            }
+            70% {
+              opacity: 0.6;
+              filter: blur(0.5px);
+            }
+            100% {
+              transform: rotate(calc(var(--angle) + 540deg)) translate(0px) rotate(calc(-1 * (var(--angle) + 540deg))) scale(0.1);
+              opacity: 0;
+              filter: blur(4px);
+            }
+          }
+          @keyframes whirlpoolRotate {
+            0% {
+              transform: translate(-50%, -50%) rotate(0deg);
+            }
+            100% {
+              transform: translate(-50%, -50%) rotate(-360deg);
+            }
+          }
+          .spiral-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-left: -90px;
+            margin-top: -12px;
+            width: 180px;
+            text-align: center;
+            font-weight: 300;
+            font-size: 1.1rem;
+            color: #7FE252;
+            text-shadow: 0 0 12px rgba(127, 226, 82, 0.4);
+            pointer-events: none;
+            transform-origin: center center;
+          }
+        `}</style>
+
+        <div className="relative w-[550px] h-[550px]">
+          {/* Concentric ripples (Drain Grid) */}
+          {[...Array(6)].map((_, i) => (
+            <div 
+              key={i} 
+              className="absolute top-1/2 left-1/2 border border-white/5 rounded-full transform -translate-x-1/2 -translate-y-1/2"
+              style={{ 
+                width: `${(i + 1) * 80}px`,
+                height: `${(i + 1) * 80}px`,
+                opacity: 0.8 - (i * 0.12),
+              }}
+            />
+          ))}
+
+          {/* Rotating dashed tracks */}
+          <div 
+            className="absolute top-1/2 left-1/2 w-[480px] h-[480px] border border-dashed border-[#7FE252]/5 rounded-full"
+            style={{
+              animation: 'whirlpoolRotate 25s linear infinite'
+            }}
+          />
+          <div 
+            className="absolute top-1/2 left-1/2 w-[320px] h-[320px] border border-dotted border-white/5 rounded-full"
+            style={{
+              animation: 'whirlpoolRotate 18s linear infinite reverse'
+            }}
+          />
+
+          {/* Swirling Job Titles */}
+          {[
+            'Software Engineer',
+            'Data Scientist',
+            'ML Engineer',
+            'UI/UX Designer',
+            'Business Analyst',
+            'Product Manager',
+            'Digital Marketing',
+            'Data Analyst',
+            'DevOps Specialist',
+            'Frontend Developer'
+          ].map((title, i) => (
+            <div
+              key={i}
+              className="spiral-text"
+              style={{
+                '--angle': `${i * 36}deg`,
+                animation: 'spiralSink 12s linear infinite',
+                animationDelay: `${i * 1.2}s`,
+                opacity: 0
+              }}
+            >
+              {title}
+            </div>
+          ))}
+
+          {/* Center Black Hole / Drain */}
+          <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-[#7FE252]/10 rounded-full blur-xl transform -translate-x-1/2 -translate-y-1/2 z-10 animate-pulse"></div>
+          <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-[#7FE252] rounded-full shadow-[0_0_20px_#7FE252] transform -translate-x-1/2 -translate-y-1/2 z-20 animate-pulse"></div>
+        </div>
       </div>
     </div>
   );

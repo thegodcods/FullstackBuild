@@ -7,7 +7,7 @@ from nltk.corpus import stopwords
 
 # 1. LOAD MODEL SEKALI SAJA (Global Scope)
 # Jangan load model di dalam fungsi cleaning!
-print("🔄 Loading NLP Model & Tokenizer...")
+print("Loading NLP Model & Tokenizer...")
 model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
 tokenizer = model.tokenizer
 factory = StopWordRemoverFactory()
@@ -41,7 +41,7 @@ CUSTOM_STOPWORDS = {"bertanggung", "jawab", "melakukan", "mengelola", "membuat",
     "sebagai", "dalam", "pada", "oleh", "secara", "serta", "phone", "contact", "address", "halaman"}
 STOPWORDS_ID.update(CUSTOM_STOPWORDS)
 STOPWORDS_ID.update(stopwords_en)
-print("✅ Model Ready.")
+print("Model Ready.")
 
 def merge_short_tokens(text: str) -> str:
     """

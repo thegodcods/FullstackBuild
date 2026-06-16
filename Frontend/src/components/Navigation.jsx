@@ -32,10 +32,24 @@ const Navigation = ({ setCurrentPage, currentPage }) => {
 
         {/* Nav Links */}
         <nav className="hidden md:flex gap-8 text-xs font-medium text-gray-300">
-          <button className="hover:text-white transition">How It Works</button>
-          <button className="hover:text-white transition">Features</button>
-          <button className="hover:text-white transition">Resources</button>
-          <button className="hover:text-white transition">About Us</button>
+          <button 
+            onClick={() => setCurrentPage('how-it-works')}
+            className={`hover:text-white transition ${currentPage === 'how-it-works' ? 'text-[#7FE252] font-semibold' : ''}`}
+          >
+            How It Works
+          </button>
+          <button 
+            onClick={() => setCurrentPage('features')}
+            className={`hover:text-white transition ${currentPage === 'features' ? 'text-[#7FE252] font-semibold' : ''}`}
+          >
+            Features
+          </button>
+          <button 
+            onClick={() => setCurrentPage('about-us')}
+            className={`hover:text-white transition ${currentPage === 'about-us' ? 'text-[#7FE252] font-semibold' : ''}`}
+          >
+            About Us
+          </button>
         </nav>
 
         {/* Auth or Profile Section */}

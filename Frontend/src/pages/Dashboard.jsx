@@ -12,7 +12,6 @@ import {
   PenTool,
   Bell,
   ChevronDown,
-  Check,
   LogOut
 } from 'lucide-react';
 import { Logo } from '../components/Navigation';
@@ -101,12 +100,42 @@ const Dashboard = ({ setCurrentPage }) => {
   };
 
   const jobTemplates = [
-    { id: 'data-scientist', title: 'Data Scientist', desc: 'Analyze data and build machine learning models.', icon: Code },
-    { id: 'ml-engineer', title: 'Machine Learning Engineer', desc: 'Build and deploy machine learning models.', icon: Network },
-    { id: 'data-analyst', title: 'Data Analyst', desc: 'Extract insight from data and create reports.', icon: BarChart },
-    { id: 'software-engineer', title: 'Software Engineer', desc: 'Design and build scalable software solutions.', icon: Globe },
-    { id: 'business-analyst', title: 'Business Analyst', desc: 'Analyze business needs and provide data solution.', icon: Monitor },
-    { id: 'ui-ux', title: 'UI/UX Designer', desc: 'Design user-centered interfaces and experiences.', icon: PenTool },
+    { 
+      id: 'data-scientist', 
+      title: 'Data Scientist', 
+      desc: 'Looking for a Data Scientist to analyze large datasets and build predictive machine learning models. Clean and analyze data, design machine learning pipelines, evaluate model performance, and collaborate with business teams. Requirements: Strong proficiency in Python, SQL, pandas, numpy, scikit-learn, and machine learning algorithms (regression, classification, clustering). Experience with data visualization tools (Tableau, PowerBI) and databases (MySQL, MongoDB).', 
+      icon: Code 
+    },
+    { 
+      id: 'ml-engineer', 
+      title: 'Machine Learning Engineer', 
+      desc: 'Looking for a Machine Learning Engineer to design, build, and deploy production-grade machine learning systems. Train and fine-tune ML models, build robust data pipelines, optimize model inference speed, and deploy models using Docker and Kubernetes. Requirements: Deep understanding of Python, PyTorch, TensorFlow, transformers, NLP, deep learning, Docker, Git, CI/CD, and model deployment APIs (Flask, FastAPI).', 
+      icon: Network 
+    },
+    { 
+      id: 'data-analyst', 
+      title: 'Data Analyst', 
+      desc: 'Looking for a Data Analyst to extract business insights and build dashboard reports. Query database systems, clean data, perform statistical analysis, and present findings to stakeholders. Requirements: Proficiency in SQL, Python, Excel, Power BI, Tableau, data visualization, business intelligence, and data warehousing.', 
+      icon: BarChart 
+    },
+    { 
+      id: 'software-engineer', 
+      title: 'Software Engineer', 
+      desc: 'Looking for a Software Engineer to design, build, and maintain scalable web applications and microservices. Develop backend services, write clean code, perform unit testing, and design system architectures. Requirements: Strong coding skills in Javascript, Typescript, Node.js, Express, React, HTML, CSS, REST APIs, SQL, MongoDB, Git, and Docker.', 
+      icon: Globe 
+    },
+    { 
+      id: 'business-analyst', 
+      title: 'Business Analyst', 
+      desc: 'Looking for a Business Analyst to bridge business needs with technology solutions. Gather business requirements, document workflows, analyze processes, and collaborate with product teams. Requirements: Strong analytical thinking, requirement gathering, Agile, Scrum, process mapping, Excel, SQL, Jira, and great communication skills.', 
+      icon: Monitor 
+    },
+    { 
+      id: 'ui-ux', 
+      title: 'UI/UX Designer', 
+      desc: 'Looking for a UI/UX Designer to design user-centered web and mobile interfaces. Create user flows, wireframes, high-fidelity mockups, prototypes, and conduct usability testing. Requirements: Proficiency in Figma, Adobe XD, Photoshop, wireframing, prototyping, user research, UI design principles, responsive design, and basic knowledge of HTML/CSS.', 
+      icon: PenTool 
+    },
   ];
 
   return (
@@ -120,10 +149,7 @@ const Dashboard = ({ setCurrentPage }) => {
         </div>
 
         <div className="flex items-center gap-6">
-          <button className="text-gray-400 hover:text-white transition">
-            <Bell size={20} />
-          </button>
-          <div className="flex items-center gap-3 cursor-pointer border-l border-white/10 pl-6 group relative">
+          <div className="flex items-center gap-3 cursor-pointer group relative">
             <div className="w-8 h-8 rounded-full bg-[#7FE252] flex items-center justify-center text-black font-bold text-sm">
               {getUserInitials()}
             </div>
@@ -193,173 +219,173 @@ const Dashboard = ({ setCurrentPage }) => {
           </div>
         </div>
 
-          {/* Two Column Layout */ }
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-    {/* Left Column: Upload CVs */}
-    <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-6 flex flex-col gap-6">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-white/5 rounded flex items-center justify-center text-[#7FE252] text-sm font-mono">1</div>
-        <div>
-          <h2 className="text-lg font-medium">Upload CVs</h2>
-          <p className="text-xs text-gray-500">Upload multiple CV files (PDF only)</p>
-        </div>
-      </div>
-
-      {/* Drag & Drop Zone */}
-      <div className="border border-dashed border-white/20 rounded-xl p-10 flex flex-col items-center justify-center text-center bg-[#121212] hover:bg-[#1a1a1a] transition cursor-pointer group">
-        <input
-          type="file"
-          id="cv-upload"
-          multiple
-          accept=".pdf"
-          onChange={handleFileUpload}
-          className="hidden"
-        />
-        <label htmlFor="cv-upload" className="w-full cursor-pointer flex flex-col items-center">
-          <UploadCloud size={48} className="text-[#7FE252] mb-4 group-hover:scale-110 transition-transform" />
-          <p className="text-sm mb-2">Drag & drop CV files here</p>
-          <p className="text-xs text-gray-500 mb-4">or</p>
-          <button type="button" className="border border-[#7FE252] text-[#7FE252] px-6 py-2 rounded-lg text-sm hover:bg-[#7FE252]/10 transition">
-            Browse Files
-          </button>
-          <p className="text-xs text-gray-500 mt-4">PDF format only max 10MB per file</p>
-        </label>
-      </div>
-
-      {/* Uploaded Files List */}
-      <div className="flex flex-col gap-3">
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-gray-300">Uploaded Files ({uploadedFiles.length})</span>
-          <button className="text-[#7FE252] text-xs hover:underline">Clear All</button>
-        </div>
-
-        <div className="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
-          {uploadedFiles.map((file) => (
-            <div key={file.id} className="flex items-center justify-between bg-[#121212] p-3 rounded-lg border border-white/5">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-500/10 rounded flex items-center justify-center">
-                  <span className="text-red-500 text-xs font-bold">PDF</span>
-                </div>
-                <span className="text-sm text-gray-300">{file.name}</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-xs text-gray-500">{file.size}</span>
-                <button onClick={() => removeFile(file.id)} className="text-gray-500 hover:text-white transition">
-                  <X size={16} />
-                </button>
+          {/* Left Column: Upload CVs */}
+          <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-6 flex flex-col gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-white/5 rounded flex items-center justify-center text-[#7FE252] text-sm font-mono">1</div>
+              <div>
+                <h2 className="text-lg font-medium">Upload CVs</h2>
+                <p className="text-xs text-gray-500">Upload multiple CV files (PDF only)</p>
               </div>
             </div>
-          ))}
-        </div>
 
-        {uploadedFiles.length > 0 && (
-          <div className="bg-[#7FE252]/10 border border-[#7FE252]/20 text-[#7FE252] p-3 rounded-lg flex items-center gap-2 text-sm mt-2">
-            <CheckCircle2 size={16} />
-            <span>{uploadedFiles.length} files uploaded successfully</span>
-          </div>
-        )}
-      </div>
-    </div>
+            {/* Drag & Drop Zone */}
+            <div className="border border-dashed border-white/20 rounded-xl p-10 flex flex-col items-center justify-center text-center bg-[#121212] hover:bg-[#1a1a1a] transition cursor-pointer group">
+              <input
+                type="file"
+                id="cv-upload"
+                multiple
+                accept=".pdf"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <label htmlFor="cv-upload" className="w-full cursor-pointer flex flex-col items-center">
+                <UploadCloud size={48} className="text-[#7FE252] mb-4 group-hover:scale-110 transition-transform" />
+                <p className="text-sm mb-2">Drag & drop CV files here</p>
+                <p className="text-xs text-gray-500 mb-4">or</p>
+                <button type="button" className="border border-[#7FE252] text-[#7FE252] px-6 py-2 rounded-lg text-sm hover:bg-[#7FE252]/10 transition">
+                  Browse Files
+                </button>
+                <p className="text-xs text-gray-500 mt-4">PDF format only max 10MB per file</p>
+              </label>
+            </div>
 
-    {/* Right Column: Select Job */}
-    <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-6 flex flex-col gap-6">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-white/5 rounded flex items-center justify-center text-[#7FE252] text-sm font-mono">2</div>
-        <div>
-          <h2 className="text-lg font-medium">Select Job / Job Description</h2>
-          <p className="text-xs text-gray-500">Choose a job or input custom job description</p>
-        </div>
-      </div>
+            {/* Uploaded Files List */}
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-300">Uploaded Files ({uploadedFiles.length})</span>
+                <button className="text-[#7FE252] text-xs hover:underline">Clear All</button>
+              </div>
 
-      {/* Tabs */}
-      <div className="flex rounded-lg bg-[#121212] p-1 border border-white/5">
-        <button
-          onClick={() => setActiveTab('template')}
-          className={`flex-1 py-2 text-sm text-center rounded-md transition ${activeTab === 'template' ? 'bg-[#1a1a1a] text-[#7FE252] border-b-2 border-[#7FE252]' : 'text-gray-500 hover:text-gray-300'}`}
-        >
-          Choose from Template
-        </button>
-        <button
-          onClick={() => setActiveTab('custom')}
-          className={`flex-1 py-2 text-sm text-center rounded-md transition ${activeTab === 'custom' ? 'bg-[#1a1a1a] text-[#7FE252] border-b-2 border-[#7FE252]' : 'text-gray-500 hover:text-gray-300'}`}
-        >
-          Custom Job Description
-        </button>
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === 'template' ? (
-        <div className="flex flex-col gap-4 flex-grow">
-          <span className="text-sm text-gray-300">Popular Jobs</span>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-grow overflow-y-auto pr-2 custom-scrollbar max-h-[350px]">
-            {jobTemplates.map((job) => {
-              const Icon = job.icon;
-              const isSelected = selectedJob === job.id;
-              return (
-                <div
-                  key={job.id}
-                  onClick={() => setSelectedJob(job.id)}
-                  className={`p-4 rounded-xl border cursor-pointer transition flex flex-col gap-3 relative overflow-hidden ${isSelected ? 'border-[#7FE252] bg-[#7FE252]/5' : 'border-white/5 bg-[#121212] hover:border-white/20'}`}
-                >
-                  <div className="flex items-start justify-between">
-                    <Icon size={24} className={isSelected ? 'text-[#7FE252]' : 'text-gray-500'} />
-                    {isSelected && <CheckCircle2 size={20} className="text-[#7FE252]" />}
+              <div className="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                {uploadedFiles.map((file) => (
+                  <div key={file.id} className="flex items-center justify-between bg-[#121212] p-3 rounded-lg border border-white/5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-red-500/10 rounded flex items-center justify-center">
+                        <span className="text-red-500 text-xs font-bold">PDF</span>
+                      </div>
+                      <span className="text-sm text-gray-300">{file.name}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs text-gray-500">{file.size}</span>
+                      <button onClick={() => removeFile(file.id)} className="text-gray-500 hover:text-white transition">
+                        <X size={16} />
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-sm font-medium mb-1">{job.title}</h3>
-                    <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{job.desc}</p>
-                  </div>
+                ))}
+              </div>
+
+              {uploadedFiles.length > 0 && (
+                <div className="bg-[#7FE252]/10 border border-[#7FE252]/20 text-[#7FE252] p-3 rounded-lg flex items-center gap-2 text-sm mt-2">
+                  <CheckCircle2 size={16} />
+                  <span>{uploadedFiles.length} files uploaded successfully</span>
                 </div>
-              );
-            })}
+              )}
+            </div>
+          </div>
+
+          {/* Right Column: Select Job */}
+          <div className="bg-[#0a0a0a] border border-white/5 rounded-xl p-6 flex flex-col gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-white/5 rounded flex items-center justify-center text-[#7FE252] text-sm font-mono">2</div>
+              <div>
+                <h2 className="text-lg font-medium">Select Job / Job Description</h2>
+                <p className="text-xs text-gray-500">Choose a job or input custom job description</p>
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex rounded-lg bg-[#121212] p-1 border border-white/5">
+              <button
+                onClick={() => setActiveTab('template')}
+                className={`flex-1 py-2 text-sm text-center rounded-md transition ${activeTab === 'template' ? 'bg-[#1a1a1a] text-[#7FE252] border-b-2 border-[#7FE252]' : 'text-gray-500 hover:text-gray-300'}`}
+              >
+                Choose from Template
+              </button>
+              <button
+                onClick={() => setActiveTab('custom')}
+                className={`flex-1 py-2 text-sm text-center rounded-md transition ${activeTab === 'custom' ? 'bg-[#1a1a1a] text-[#7FE252] border-b-2 border-[#7FE252]' : 'text-gray-500 hover:text-gray-300'}`}
+              >
+                Custom Job Description
+              </button>
+            </div>
+
+            {/* Tab Content */}
+            {activeTab === 'template' ? (
+              <div className="flex flex-col gap-4 flex-grow">
+                <span className="text-sm text-gray-300">Popular Jobs</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-grow overflow-y-auto pr-2 custom-scrollbar max-h-[450px]">
+                  {jobTemplates.map((job) => {
+                    const Icon = job.icon;
+                    const isSelected = selectedJob === job.id;
+                    return (
+                      <div
+                        key={job.id}
+                        onClick={() => setSelectedJob(job.id)}
+                        className={`p-4 rounded-xl border cursor-pointer transition flex flex-col justify-between relative overflow-hidden min-h-[150px] ${isSelected ? 'border-[#7FE252] bg-[#7FE252]/5' : 'border-white/5 bg-[#121212] hover:border-white/20'}`}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <Icon size={24} className={isSelected ? 'text-[#7FE252]' : 'text-gray-500'} />
+                          {isSelected && <CheckCircle2 size={20} className="text-[#7FE252]" />}
+                        </div>
+                        <div>
+                          <h3 className={`text-sm font-medium mb-1.5 transition-colors ${isSelected ? 'text-[#7FE252]' : 'text-white'}`}>{job.title}</h3>
+                          <p className={`text-xs transition-all leading-relaxed ${isSelected ? 'text-gray-200 line-clamp-none' : 'text-gray-400 line-clamp-3'}`}>{job.desc}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2 flex-grow">
+                <label className="text-sm text-gray-300">Job Description</label>
+                <textarea
+                  value={customJobDescription}
+                  onChange={(e) => setCustomJobDescription(e.target.value)}
+                  className="w-full flex-grow bg-[#121212] border border-white/10 rounded-lg p-4 text-sm text-gray-300 focus:border-[#7FE252] outline-none resize-none transition"
+                  placeholder="Paste or type the detailed job description here. Our AI will match candidates against these specific requirements..."
+                />
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="mt-auto pt-4 flex flex-col gap-3">
+              {screeningMessage && (
+                <div className={`text-center text-sm p-3 rounded-lg ${screeningMessage.includes('berhasil')
+                  ? 'bg-[#7FE252]/10 text-[#7FE252]'
+                  : screeningMessage.includes('Processing')
+                    ? 'bg-blue-500/10 text-blue-400'
+                    : 'bg-red-500/10 text-red-400'
+                  }`}>
+                  {screeningMessage}
+                </div>
+              )}
+              <button
+                onClick={handleScreening}
+                disabled={isScreening}
+                className="w-full bg-[#7FE252] text-black font-semibold py-4 rounded-lg hover:bg-[#6ed243] transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isScreening ? 'Processing...' : 'Start Screening'}
+              </button>
+              <p className="text-center text-xs text-gray-500">You can review before starting</p>
+            </div>
+
           </div>
         </div>
-      ) : (
-        <div className="flex flex-col gap-2 flex-grow">
-          <label className="text-sm text-gray-300">Job Description</label>
-          <textarea
-            value={customJobDescription}
-            onChange={(e) => setCustomJobDescription(e.target.value)}
-            className="w-full flex-grow bg-[#121212] border border-white/10 rounded-lg p-4 text-sm text-gray-300 focus:border-[#7FE252] outline-none resize-none transition"
-            placeholder="Paste or type the detailed job description here. Our AI will match candidates against these specific requirements..."
-          />
-        </div>
-      )}
 
-      {/* Submit Button */}
-      <div className="mt-auto pt-4 flex flex-col gap-3">
-        {screeningMessage && (
-          <div className={`text-center text-sm p-3 rounded-lg ${screeningMessage.includes('berhasil')
-            ? 'bg-[#7FE252]/10 text-[#7FE252]'
-            : screeningMessage.includes('Processing')
-              ? 'bg-blue-500/10 text-blue-400'
-              : 'bg-red-500/10 text-red-400'
-            }`}>
-            {screeningMessage}
+        {/* Footer Note */}
+        <div className="mt-8 flex items-center gap-3 bg-[#0a0a0a] border border-white/5 p-4 rounded-lg w-fit">
+          <ShieldCheck size={24} className="text-[#7FE252]" />
+          <div>
+            <p className="text-sm font-medium">Your data is secure and confidential</p>
+            <p className="text-xs text-gray-500">We only use your data for AI-powered screening and analysis.</p>
           </div>
-        )}
-        <button
-          onClick={handleScreening}
-          disabled={isScreening}
-          className="w-full bg-[#7FE252] text-black font-semibold py-4 rounded-lg hover:bg-[#6ed243] transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isScreening ? 'Processing...' : 'Start Screening'}
-        </button>
-        <p className="text-center text-xs text-gray-500">You can review before starting</p>
-      </div>
-
-    </div>
-  </div>
-
-  {/* Footer Note */ }
-  <div className="mt-8 flex items-center gap-3 bg-[#0a0a0a] border border-white/5 p-4 rounded-lg w-fit">
-    <ShieldCheck size={24} className="text-[#7FE252]" />
-    <div>
-      <p className="text-sm font-medium">Your data is secure and confidential</p>
-      <p className="text-xs text-gray-500">We only use your data for AI-powered screening and analysis.</p>
-    </div>
-  </div>
+        </div>
       </main >
     </div >
   );

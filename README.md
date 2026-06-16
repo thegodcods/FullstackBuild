@@ -1,70 +1,129 @@
-# Getting Started with Create React App
+# QuickHire - AI-Powered CV Screening & Candidate Ranking
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+## 📝 Deskripsi Singkat Proyek
 
-In the project directory, you can run:
+**QuickHire** adalah platform rekrutmen berbasis kecerdasan buatan (AI) yang dirancang untuk mempermudah perekrut (*recruiter*) dalam mencocokkan, menyaring, dan mengurutkan CV/Resume kandidat secara otomatis. 
 
-### `npm start`
+Berbeda dengan pencarian berbasis kata kunci (*keyword matching*) konvensional yang kaku, QuickHire menggunakan model pemrosesan bahasa alami (NLP) tingkat lanjut (**IndoBERT Reranker**) berbasis *deep learning* untuk mengevaluasi keselarasan semantik antara kualifikasi CV kandidat dengan deskripsi pekerjaan yang dibutuhkan secara mendalam.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🧠 Model AI / ML (Artificial Intelligence / Machine Learning)
 
-### `npm test`
+Aplikasi ini memiliki fitur AI/ML untuk perankingan relevansi kandidat:
+- **Base Model (Model Dasar):** [indobenchmark/indobert-base-p1](https://huggingface.co/indobenchmark/indobert-base-p1) (IndoBERT Base model oleh IndoBenchmark).
+- **Arsitektur Model Reranker:** Menggunakan kelas `IndoBERTRanker` (didefinisikan di [quickhire_model.py](backend/quickhire_model.py)) yang mengekstrak representasi vektor token `[CLS]` dari output IndoBERT, lalu memasukkannya ke dalam Multi-Layer Perceptron (MLP) regresi untuk menghasilkan skor relevansi kecocokan.
+- **Skor Output:** Model memprediksi nilai logits mentah yang kemudian dikalibrasi oleh backend (`scale_score` di `app.py`) menggunakan fungsi Sigmoid untuk dikonversi menjadi persentase kecocokan 0-100% yang dinamis bagi UI.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 🔗 Tautan Model & Cara Memuat (Load)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Untuk menjalankan fitur analisis AI, aplikasi memerlukan file bobot model terlatih (*trained checkpoint*):
+- **Tautan Unduh Model (Jika Ada):** Letakkan file checkpoint Anda yang bernama **`best.pt`** langsung di dalam direktori `backend/`. 
+  - *Catatan:* Jika Anda menggunakan model bawaan dari repositori pelatihan Anda, silakan unduh file `best.pt` dari cloud storage tim Anda / repositori model dan pindahkan ke folder tersebut.
+- **Cara Memuat Model (Load Model):**
+  Model dimuat secara otomatis saat server backend berjalan lewat fungsi `load_model` di [predict_raw_cv.py](backend/predict_raw_cv.py#L6-L29):
+  ```python
+  # Menginisialisasi arsitektur model kosong
+  model = IndoBERTRanker(model_name=MODEL_NAME, hidden_dim=256, dropout=0.1, freeze_bert=False)
+  # Memuat checkpoint dari file best.pt
+  checkpoint = torch.load("best.pt", map_location=device)
+  # Memuat state dict bobot ke dalam arsitektur model
+  model.load_state_dict(checkpoint['model_state_dict'])
+  model.eval()
+  ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## ⚙️ Petunjuk Setup Environment
 
-### `npm run eject`
+Ikuti langkah-langkah di bawah ini untuk menyiapkan lingkungan kerja sebelum menjalankan aplikasi:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 1. Prasyarat Sistem (Hanya untuk OS Windows Lokal)
+- **Instal Tesseract OCR:** 
+  Download installer Tesseract OCR untuk Windows, jalankan instalasi, dan sesuaikan path program executable di komputer Anda (contoh: `C:\Program Files\Tesseract-OCR\tesseract.exe`).
+- **Instal Poppler Utils:** 
+  Download file zip Poppler untuk Windows, ekstrak, dan sesuaikan path folder bin di komputer Anda (contoh: `C:\Program Files\poppler-26.02.0\Library\bin`).
+- **Instal MongoDB:** 
+  Instal MongoDB Community Server lokal dan pastikan layanannya berjalan di port default `27017`.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+*(Catatan: Langkah prasyarat sistem ini tidak diperlukan jika Anda menggunakan Docker, karena dependensi ini otomatis terinstal di dalam container Linux).*
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 2. Setup Database & Akun MongoDB
+Pastikan MongoDB berjalan secara lokal di port `27017`. Aplikasi akan otomatis membuat database bernama `quick_hire` saat dijalankan pertama kali.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 3. Setup Python Virtual Environment (Backend)
+1. Masuk ke direktori backend:
+   ```bash
+   cd backend
+   ```
+2. Buat Virtual Environment:
+   ```bash
+   python -m venv .venv
+   ```
+3. Aktifkan Virtual Environment:
+   - **Windows (PowerShell):** `.venv\Scripts\Activate.ps1`
+   - **Windows (CMD):** `.venv\Scripts\activate.bat`
+   - **macOS/Linux:** `source .venv/bin/activate`
+4. Pasang semua dependensi Python:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## Learn More
+### 4. Setup Node.js (Frontend)
+1. Masuk ke direktori Frontend:
+   ```bash
+   cd ../Frontend
+   ```
+2. Pasang semua dependensi npm:
+   ```bash
+   npm install
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🏃 Cara Menjalankan Aplikasi
 
-### Code Splitting
+Aplikasi dapat dijalankan secara lokal (manual) atau menggunakan container Docker.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Opsi A: Menjalankan Secara Lokal (Manual)
 
-### Analyzing the Bundle Size
+#### 1. Jalankan Backend
+1. Masuk ke folder `backend` dan pastikan virtual environment aktif.
+2. Buat file `.env` di dalam folder `backend/` dengan isi berikut:
+   ```env
+   MONGO_URI=mongodb://localhost:27017/
+   SECRET_KEY=thisismysecretkey123
+   FLASK_ENV=development
+   FLASK_DEBUG=True
+   ```
+3. Jalankan server Flask API:
+   ```bash
+   python app.py
+   ```
+   *Backend API akan aktif dan berjalan di `http://localhost:5000`*
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+#### 2. Jalankan Frontend
+1. Buka terminal baru dan masuk ke folder `Frontend`.
+2. Jalankan server development React:
+   ```bash
+   npm start
+   ```
+   *Aplikasi web client akan otomatis terbuka di browser Anda pada alamat `http://localhost:3000`*
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Opsi B: Menjalankan Menggunakan Docker (Rekomendasi Deployment)
 
-### Advanced Configuration
+Untuk menjalankan seluruh stack backend (Flask + Tesseract + Poppler) beserta database MongoDB lokal secara instan tanpa perlu setup manual, gunakan Docker Compose:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Pastikan Docker Desktop sudah terinstal dan aktif.
+2. Masuk ke folder `backend/`.
+3. Jalankan perintah:
+   ```bash
+   docker-compose up -d --build
+   ```
+4. Kontainer database MongoDB dan Flask API akan aktif dan berjalan di port `5000`. Anda tinggal menjalankan Frontend React secara lokal atau men-deploy-nya ke hosting statis.

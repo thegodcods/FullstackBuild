@@ -3,10 +3,18 @@ import re, os
 import pytesseract
 from pdf2image import convert_from_path
 
-# KONFIGURASI PENTING UNTUK WINDOWS
-# Ganti path ini dengan lokasi instalasi Tesseract di komputermu
-POPPLER_PATH = r'C:\Program Files\poppler-26.02.0\Library\bin'
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+import platform
+
+# KONFIGURASI PENTING UNTUK WINDOWS & LINUX (DOCKER)
+IS_WINDOWS = platform.system() == 'Windows'
+
+if IS_WINDOWS:
+    # Ganti path ini dengan lokasi instalasi Tesseract di komputermu (Windows)
+    POPPLER_PATH = r'C:\Program Files\poppler-26.02.0\Library\bin'
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+else:
+    # Pada Linux (Docker), tesseract-ocr dan poppler-utils diinstal secara sistem di PATH
+    POPPLER_PATH = None
 
 def ekstraksi_pdf_cv (pdf_file, filename):
     if not os.path.exists("temp_pdf"):
@@ -85,22 +93,25 @@ def extract_pdf_text(pdf_path):
             
             if text:
                 full_text += text + "\n" # newline antar halaman
-    os.remove(pdf_path)
+    # os.remove(pdf_path)
     return full_text
 
 
 def extract_pdf_image(pdf_path):
     print("Sedang mengkonversi PDF ke Gambar...")
 
-    # Cek apakah path Poppler valid
-    if not os.path.exists(POPPLER_PATH):
+    # Cek apakah path Poppler valid (hanya untuk Windows)
+    if IS_WINDOWS and not os.path.exists(POPPLER_PATH):
         print(f"ERROR: Folder Poppler tidak ditemukan di: {POPPLER_PATH}")
         print("Silakan cek variabel POPPLER_PATH di kode.")
         return None
     
     # 1. Konversi PDF ke list of images (DPI 300 agar teks jelas)
     try:
-        pages = convert_from_path(pdf_path, dpi=300, poppler_path=POPPLER_PATH)
+        if IS_WINDOWS:
+            pages = convert_from_path(pdf_path, dpi=300, poppler_path=POPPLER_PATH)
+        else:
+            pages = convert_from_path(pdf_path, dpi=300)
     except Exception as e:
         print(f"Gagal memproses PDF. Pastikan Poppler sudah diinstall & ada di PATH.")
         print(f"Error: {e}")
@@ -122,5 +133,5 @@ def extract_pdf_image(pdf_path):
         full_text += f"\n--- Halaman {i+1} ---\n"
         full_text += text + "\n"
 
-    os.remove(pdf_path)
+    # os.remove(pdf_path)
     return full_text

@@ -18,6 +18,18 @@ import ScoreRing from '../components/ScoreRing';
 import CandidateDetailsModal from '../components/CandidateDetailsModal';
 import { Logo } from '../components/Navigation';
 
+const getShortJobTitle = (desc) => {
+  if (!desc) return 'Job Screening';
+  const cleanDesc = desc.toLowerCase();
+  if (cleanDesc.includes('data scientist')) return 'Data Scientist';
+  if (cleanDesc.includes('machine learning engineer') || cleanDesc.includes('ml engineer')) return 'Machine Learning Engineer';
+  if (cleanDesc.includes('data analyst')) return 'Data Analyst';
+  if (cleanDesc.includes('software engineer')) return 'Software Engineer';
+  if (cleanDesc.includes('business analyst')) return 'Business Analyst';
+  if (cleanDesc.includes('ui/ux designer') || cleanDesc.includes('ui/ux')) return 'UI/UX Designer';
+  return desc.length > 30 ? desc.substring(0, 30) + '...' : desc;
+};
+
 const Ranking = ({ setCurrentPage }) => {
   const { user, logout, getUserInitials } = useAuth();
   const [candidates, setCandidates] = useState([]);
@@ -85,7 +97,7 @@ const Ranking = ({ setCurrentPage }) => {
 
         if (resultInfo.success) {
           const desc = resultInfo.data.job_description || 'Job Screening';
-          setJobTitle(desc.length > 30 ? desc.substring(0, 30) + '...' : desc);
+          setJobTitle(getShortJobTitle(desc));
           setJobDescRaw(desc);
         }
       } catch (err) {
@@ -179,10 +191,7 @@ const Ranking = ({ setCurrentPage }) => {
         </div>
 
         <div className="flex items-center gap-6">
-          <button className="text-gray-400 hover:text-white transition">
-            <Bell size={20} />
-          </button>
-          <div className="flex items-center gap-3 cursor-pointer border-l border-white/10 pl-6 group relative">
+          <div className="flex items-center gap-3 cursor-pointer group relative">
             <div className="w-8 h-8 rounded-full bg-[#7FE252] flex items-center justify-center text-black font-bold text-sm">
               {getUserInitials()}
             </div>
@@ -250,7 +259,7 @@ const Ranking = ({ setCurrentPage }) => {
                       }}
                       className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-[#2a2a2a] transition border-t border-white/5 first:border-t-0 rounded-lg"
                     >
-                      <span className="block truncate font-medium">{item.job_description}</span>
+                      <span className="block truncate font-medium">{getShortJobTitle(item.job_description)}</span>
                       <span className="block text-[10px] text-gray-500 mt-1">
                         {item.created_at ? new Date(item.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) : '—'} • {item.cv_count} CV
                       </span>

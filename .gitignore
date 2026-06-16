@@ -68,3 +68,15 @@ dist/
 build/
 backend-main/
 
+# Hugging Face Space modules
+HuggingFaceSpace/
+
+# Python cache
+**/__pycache__/
+*.pyc
+
+# Local ML models (large files)
+backend/best.pt
+
+# Local temp PDFs (uploaded CVs)
+backend/temp_pdf/
