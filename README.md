@@ -22,8 +22,13 @@ Aplikasi ini memiliki fitur AI/ML untuk perankingan relevansi kandidat:
 ## 🔗 Tautan Model & Cara Memuat (Load)
 
 Untuk menjalankan fitur analisis AI, aplikasi memerlukan file bobot model terlatih (*trained checkpoint*):
-- **Tautan Unduh Model (Jika Ada):** Letakkan file checkpoint Anda yang bernama **`best.pt`** langsung di dalam direktori `backend/`. 
-  - *Catatan:* Jika Anda menggunakan model bawaan dari repositori pelatihan Anda, silakan unduh file `best.pt` dari cloud storage tim Anda / repositori model dan pindahkan ke folder tersebut.
+
+> [!IMPORTANT]
+> **File Model `best.pt` Diabaikan oleh Git**
+> Karena ukuran file model `best.pt` yang sangat besar (~500 MB), file ini telah dimasukkan ke dalam `.gitignore` dan **tidak ikut terunggah** ke repositori GitHub. 
+> 
+> Agar fitur screening AI dapat berfungsi saat dijalankan secara lokal, Anda **wajib** mendownload/menyediakan file model `best.pt` Anda sendiri secara manual dan meletakkannya langsung di dalam direktori `backend/` (sehingga jalurnya menjadi `backend/best.pt`) sebelum menjalankan server Flask.
+
 - **Cara Memuat Model (Load Model):**
   Model dimuat secara otomatis saat server backend berjalan lewat fungsi `load_model` di [predict_raw_cv.py](backend/predict_raw_cv.py#L6-L29):
   ```python
@@ -40,20 +45,27 @@ Untuk menjalankan fitur analisis AI, aplikasi memerlukan file bobot model terlat
 
 ## ⚙️ Petunjuk Setup Environment
 
-Ikuti langkah-langkah di bawah ini untuk menyiapkan lingkungan kerja sebelum menjalankan aplikasi:
+Ikuti langkah-langkah di bawah ini untuk menyiapkan lingkungan kerja sebelum menjalankan aplikasi secara lokal:
 
 ### 1. Prasyarat Sistem (Hanya untuk OS Windows Lokal)
+Jika dijalankan langsung secara lokal di OS Windows, pastikan Anda telah menyiapkan dependensi eksternal berikut:
 - **Instal Tesseract OCR:** 
-  Download installer Tesseract OCR untuk Windows, jalankan instalasi, dan sesuaikan path program executable di komputer Anda (contoh: `C:\Program Files\Tesseract-OCR\tesseract.exe`).
+  Download installer Tesseract OCR untuk Windows, jalankan instalasi, dan sesuaikan path program executable di komputer Anda pada file `backend/ekstraksi_pdf.py` baris 14:
+  ```python
+  pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+  ```
 - **Instal Poppler Utils:** 
-  Download file zip Poppler untuk Windows, ekstrak, dan sesuaikan path folder bin di komputer Anda (contoh: `C:\Program Files\poppler-26.02.0\Library\bin`).
+  Download file zip Poppler untuk Windows, ekstrak, dan sesuaikan path folder bin di komputer Anda pada file `backend/ekstraksi_pdf.py` baris 13:
+  ```python
+  POPPLER_PATH = r'C:\Program Files\poppler-26.02.0\Library\bin'
+  ```
 - **Instal MongoDB:** 
   Instal MongoDB Community Server lokal dan pastikan layanannya berjalan di port default `27017`.
 
-*(Catatan: Langkah prasyarat sistem ini tidak diperlukan jika Anda menggunakan Docker, karena dependensi ini otomatis terinstal di dalam container Linux).*
+*(Catatan: Langkah prasyarat sistem Windows ini tidak diperlukan jika Anda menggunakan Docker, karena Tesseract, Poppler, dan MongoDB otomatis terinstal dan terkonfigurasi secara otomatis di dalam container).*
 
 ### 2. Setup Database & Akun MongoDB
-Pastikan MongoDB berjalan secara lokal di port `27017`. Aplikasi akan otomatis membuat database bernama `quick_hire` saat dijalankan pertama kali.
+Pastikan layanan MongoDB berjalan secara lokal di port `27017`. Aplikasi backend akan otomatis membuat database bernama `quick_hire` saat dijalankan pertama kali.
 
 ### 3. Setup Python Virtual Environment (Backend)
 1. Masuk ke direktori backend:
@@ -82,6 +94,13 @@ Pastikan MongoDB berjalan secara lokal di port `27017`. Aplikasi akan otomatis m
    ```bash
    npm install
    ```
+
+### 5. Setup Konfigurasi API (Frontend - Opsional)
+Secara default, Frontend React akan terhubung ke API backend lokal di `http://127.0.0.1:5000`. Jika Anda ingin mengubah URL server backend (misal ketika dideploy), buat file `.env` di dalam folder `Frontend/` dan isi:
+```env
+REACT_APP_API_URL=http://localhost:5000
+```
+
 
 ---
 
