@@ -11,7 +11,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
 from security import token_required, sanitize_string, LoginSchema, RegisterSchema
-from processing import processing_file
+import requests
 # Load environment variables
 load_dotenv()
 
@@ -61,6 +61,40 @@ def extract_name_from_text(text, filename):
     fallback = filename.replace('.pdf', '').replace('_', ' ').replace('-', ' ')
     return ' '.join([w.capitalize() for w in fallback.split()])
 
+
+def call_hf_analyze(file, filename, job_description):
+    """
+    Mengirimkan file CV (PDF) dan deskripsi pekerjaan ke API Hugging Face Space.
+    Mengembalikan: score, job_struct, cv_struct, filename, raw_text
+    """
+    hf_url = os.getenv("HF_SPACE_API_URL")
+    if not hf_url:
+        raise ValueError("Environment variable 'HF_SPACE_API_URL' belum dikonfigurasi pada file .env!")
+        
+    # Reset pointer file dan baca bytes
+    file.seek(0)
+    file_bytes = file.read()
+    file.seek(0)
+    
+    files = {
+        "file": (filename, file_bytes, "application/pdf")
+    }
+    data = {
+        "job_description": job_description
+    }
+    
+    # Timeout 120 detik karena model cold start/pemrosesan CPU HF gratisan bisa memakan waktu
+    response = requests.post(hf_url, files=files, data=data, timeout=120)
+    response.raise_for_status()
+    res_data = response.json()
+    
+    return (
+        res_data["score"],
+        res_data["job_struct"],
+        res_data["cv_struct"],
+        res_data["filename"],
+        res_data["raw_text"]
+    )
 
 
 # --- Routes ---
@@ -166,7 +200,7 @@ def analyze_pdf(current_user_id):
         arr_result = []
 
         with ThreadPoolExecutor(max_workers=3) as executor:
-            results = [executor.submit(processing_file, file, job_deskription) for file in files]
+            results = [executor.submit(call_hf_analyze, file, file.filename, job_deskription) for file in files]
             for result in results:
                 score, job_struct, cv_struct, filename, raw_text = result.result()
                 print(f"score: {score}, job_struct: {job_struct}, cv_struct: {cv_struct}, filename: {filename}")
@@ -311,10 +345,10 @@ def upload_cv(current_user_id):
         if not job_description:
             return jsonify({'message': 'Job description is required'}), 400
         
-        # Process files using the new ThreadPoolExecutor and processing_file logic
+        # Process files using the new ThreadPoolExecutor and call_hf_analyze logic
         arr_result = []
         with ThreadPoolExecutor(max_workers=3) as executor:
-            results = [executor.submit(processing_file, file, job_description) for file in valid_files]
+            results = [executor.submit(call_hf_analyze, file, file.filename, job_description) for file in valid_files]
             for result in results:
                 try:
                     score, job_struct, cv_struct, filename, raw_text = result.result()
