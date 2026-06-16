@@ -27,7 +27,10 @@ Untuk menjalankan fitur analisis AI, aplikasi memerlukan file bobot model terlat
 > **File Model `best.pt` Diabaikan oleh Git**
 > Karena ukuran file model `best.pt` yang sangat besar (~500 MB), file ini telah dimasukkan ke dalam `.gitignore` dan **tidak ikut terunggah** ke repositori GitHub. 
 > 
-> Agar fitur screening AI dapat berfungsi saat dijalankan secara lokal, Anda **wajib** mendownload/menyediakan file model `best.pt` Anda sendiri secara manual dan meletakkannya langsung di dalam direktori `backend/` (sehingga jalurnya menjadi `backend/best.pt`) sebelum menjalankan server Flask.
+> Agar fitur screening AI dapat berfungsi saat dijalankan secara lokal, Anda **wajib** mengunduh file model `best.pt` terlebih dahulu melalui tautan berikut:
+> 👉 **[Download best.pt (Google Drive)](https://drive.google.com/file/d/1uVaXEthrhJNDm0rqZc2qNO1tMuohsxTG)**
+> 
+> Setelah diunduh, letakkan berkas tersebut langsung di dalam direktori `backend/` (sehingga jalurnya menjadi `backend/best.pt`) sebelum menjalankan server Flask.
 
 - **Cara Memuat Model (Load Model):**
   Model dimuat secara otomatis saat server backend berjalan lewat fungsi `load_model` di [predict_raw_cv.py](backend/predict_raw_cv.py#L6-L29):
