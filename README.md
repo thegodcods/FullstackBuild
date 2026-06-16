@@ -10,6 +10,39 @@ Berbeda dengan pencarian berbasis kata kunci (*keyword matching*) konvensional y
 
 ---
 
+## 🛠️ Tech Stack yang Digunakan
+
+Proyek ini dibangun menggunakan kombinasi teknologi modern berikut:
+
+### 💻 Frontend
+* **React.js (v19)** - Library JavaScript utama untuk membangun antarmuka pengguna yang interaktif.
+* **Tailwind CSS (v3)** - Framework CSS utility-first untuk desain antarmuka yang modern dan responsif.
+* **Lucide React** - Set ikon yang bersih dan modern untuk kebutuhan antarmuka.
+
+### ⚙️ Backend
+* **Python (Flask)** - Micro-framework untuk menyediakan API endpoints dan mengintegrasikan model pembelajaran mesin.
+* **MongoDB** - Database NoSQL berorientasi dokumen untuk menyimpan data pengguna, CV, dan hasil screening.
+* **PyMongo** - Driver Python resmi untuk menghubungkan Flask dengan database MongoDB.
+* **PyJWT & Bcrypt** - Digunakan untuk pengamanan sesi (autentikasi JWT) dan hashing kata sandi pengguna.
+
+### 🧠 AI / Machine Learning & NLP
+* **PyTorch (v2.4.1)** - Framework deep learning utama untuk menjalankan arsitektur model reranking.
+* **Hugging Face Transformers (v4.44.2)** - Untuk memuat model dasar [indobenchmark/indobert-base-p1](https://huggingface.co/indobenchmark/indobert-base-p1).
+* **Sentence Transformers (v3.0.1)** - Digunakan untuk memfasilitasi komputasi kemiripan semantik kalimat.
+* **Sastrawi, NLTK, & SpaCy** - Library NLP untuk prapemrosesan teks seperti pembersihan (*preprocessing*), tokenisasi, dan stemming kata bahasa Indonesia.
+
+### 📄 Ekstraksi Dokumen & OCR
+* **Pdfplumber** - Mengekstrak teks mentah secara langsung dari berkas PDF kandidat.
+* **Tesseract OCR (PyTesseract)** - Mesin OCR untuk mengenali teks pada berkas PDF hasil pemindaian (*scanned/image-only PDF*).
+* **Poppler (Pdf2image)** - Mengonversi dokumen PDF menjadi gambar agar dapat dibaca oleh mesin Tesseract OCR.
+
+### 🐳 DevOps & Infrastruktur
+* **Docker & Docker Compose** - Memudahkan instalasi dan menjalankan layanan backend, database MongoDB, serta pustaka sistem (Tesseract, Poppler) secara kontainerisasi.
+* **Hugging Face Spaces** - Platform alternatif untuk menjalankan deployment model/inferensi.
+
+---
+
+
 ## 🧠 Model AI / ML (Artificial Intelligence / Machine Learning)
 
 Aplikasi ini memiliki fitur AI/ML untuk perankingan relevansi kandidat:
