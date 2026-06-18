@@ -126,6 +126,7 @@ def clean_cv_text(raw_text: str) -> str:
     tokens = text.split()
     filtered = [t for t in tokens if len(t) > 1 and not t.isdigit()]
     text = " ".join(filtered)
+
         
     # Step 6: stopword dengan Sastrawi
     tokens = text.split()
