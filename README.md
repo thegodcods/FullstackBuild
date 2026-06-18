@@ -29,7 +29,7 @@ Proyek ini dibangun menggunakan kombinasi teknologi modern berikut:
 * **PyTorch (v2.4.1)** - Framework deep learning utama untuk menjalankan arsitektur model reranking.
 * **Hugging Face Transformers (v4.44.2)** - Untuk memuat model dasar [indobenchmark/indobert-base-p1](https://huggingface.co/indobenchmark/indobert-base-p1).
 * **Sentence Transformers (v3.0.1)** - Digunakan untuk memfasilitasi komputasi kemiripan semantik kalimat.
-* **Sastrawi, NLTK, & SpaCy** - Library NLP untuk prapemrosesan teks seperti pembersihan (*preprocessing*), tokenisasi, dan stemming kata bahasa Indonesia.
+* **Sastrawi & NLTK** - Library NLP untuk prapemrosesan teks seperti pembersihan (*preprocessing*), tokenisasi, dan stemming kata bahasa Indonesia.
 
 ### 📄 Ekstraksi Dokumen & OCR
 * **Pdfplumber** - Mengekstrak teks mentah secara langsung dari berkas PDF kandidat.
