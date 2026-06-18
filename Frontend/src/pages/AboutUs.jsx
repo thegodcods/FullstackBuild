@@ -2,8 +2,7 @@ import React from 'react';
 import { 
   Target, 
   Eye, 
-  Award,
-  ArrowUpRight 
+  Award
 } from 'lucide-react';
 
 const AboutUs = ({ setCurrentPage }) => {

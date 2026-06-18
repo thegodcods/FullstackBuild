@@ -10,7 +10,6 @@ import {
   Network,
   Globe,
   PenTool,
-  Bell,
   ChevronDown,
   LogOut
 } from 'lucide-react';

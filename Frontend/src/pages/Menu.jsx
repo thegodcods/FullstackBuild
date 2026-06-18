@@ -1,19 +1,31 @@
 import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-const Menu = ({ setCurrentPage }) => (
-  <div className="flex flex-col items-center">
-    {/* Hero Section */}
-    <section className="w-full max-w-6xl mx-auto px-6 py-24 text-center flex flex-col items-center">
-      <h1 className="text-5xl md:text-6xl font-semibold mb-6 tracking-tight text-[#7FE252] max-w-3xl">
-        Automated Recruitment<br />for Efficient Hiring
-      </h1>
-      <p className="text-gray-400 mb-10 max-w-xl mx-auto text-sm md:text-base">
-        Recruit smarter, faster, and more accurately with AI-powered CV screening and candidate matching.
-      </p>
-      <button onClick={() => setCurrentPage('signup')} className="bg-[#7FE252] text-black px-8 py-3 rounded-full text-sm font-bold hover:bg-[#6ed243] transition mb-16">
-        Get Started
-      </button>
+const Menu = ({ setCurrentPage }) => {
+  const { user } = useAuth();
+
+  const handleGetStarted = () => {
+    if (user) {
+      setCurrentPage('dashboard');
+    } else {
+      setCurrentPage('signup');
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center">
+      {/* Hero Section */}
+      <section className="w-full max-w-6xl mx-auto px-6 py-24 text-center flex flex-col items-center">
+        <h1 className="text-5xl md:text-6xl font-semibold mb-6 tracking-tight text-[#7FE252] max-w-3xl">
+          Automated Recruitment<br />for Efficient Hiring
+        </h1>
+        <p className="text-gray-400 mb-10 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
+          Recruit smarter, faster, and more accurately with AI-powered CV screening and candidate matching.
+        </p>
+        <button onClick={handleGetStarted} className="bg-[#7FE252] text-black px-8 py-3 rounded-full text-sm font-bold hover:bg-[#6ed243] transition mb-16">
+          Get Started
+        </button>
 
       {/* 3D Cubes Visual Placeholder */}
       <div className="flex items-center justify-center gap-8 mb-10 w-full max-w-3xl">
@@ -87,6 +99,7 @@ const Menu = ({ setCurrentPage }) => (
       </div>
     </section>
   </div>
-);
+  );
+};
 
 export default Menu;

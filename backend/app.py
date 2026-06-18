@@ -62,39 +62,74 @@ def extract_name_from_text(text, filename):
     return ' '.join([w.capitalize() for w in fallback.split()])
 
 
-def call_hf_analyze(file, filename, job_description):
+# Cache untuk model ML lokal
+ml_models = {}
+
+def get_ml_system():
+    if not ml_models:
+        print("Menyiapkan Sistem Model ML Lokal secara Lazy...")
+        # Lakukan import secara dinamis agar Flask start-up cepat dan tidak error jika dependensi belum lengkap pada start-up
+        from predict_raw_cv import load_model as load_ml_model
+        from transformers import AutoTokenizer
+        from preprocess import TextStructurer
+        from global_ml_sys_config import MODEL_NAME
+        
+        checkpoint_path = os.path.join(os.path.dirname(__file__), "best.pt")
+        if not os.path.exists(checkpoint_path):
+            raise FileNotFoundError(
+                f"Model checkpoint '{checkpoint_path}' tidak ditemukan! "
+                "Harap unduh model 'best.pt' dan letakkan di dalam folder 'backend/'."
+            )
+            
+        model, device = load_ml_model(checkpoint_path)
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+        structurer = TextStructurer()
+        
+        ml_models["model"] = model
+        ml_models["device"] = device
+        ml_models["tokenizer"] = tokenizer
+        ml_models["structurer"] = structurer
+        print(f"Sistem ML berhasil dimuat secara lokal pada device: {device}!")
+    return ml_models
+
+def call_local_analyze(file, filename, job_description):
     """
-    Mengirimkan file CV (PDF) dan deskripsi pekerjaan ke API Hugging Face Space.
+    Memproses file CV (PDF) dan deskripsi pekerjaan secara lokal.
     Mengembalikan: score, job_struct, cv_struct, filename, raw_text
     """
-    hf_url = os.getenv("HF_SPACE_API_URL")
-    if not hf_url:
-        raise ValueError("Environment variable 'HF_SPACE_API_URL' belum dikonfigurasi pada file .env!")
+    from ekstraksi_pdf import ekstraksi_pdf_cv
+    from text_processor import clean_cv_text
+    from predict_raw_cv import predict_relevance
+    
+    # 1. Pastikan file pointer di awal
+    file.seek(0)
+    
+    # 2. Ekstraksi PDF secara lokal
+    raw_text = ekstraksi_pdf_cv(file, filename)
+    if not raw_text:
+        raise ValueError(f"Gagal mengekstrak teks dari berkas {filename}")
         
-    # Reset pointer file dan baca bytes
-    file.seek(0)
-    file_bytes = file.read()
-    file.seek(0)
+    # 3. Pembersihan teks
+    clean_cv = clean_cv_text(raw_text)
     
-    files = {
-        "file": (filename, file_bytes, "application/pdf")
-    }
-    data = {
-        "job_description": job_description
-    }
+    # 4. Dapatkan sistem ML lokal
+    system = get_ml_system()
+    model = system["model"]
+    device = system["device"]
+    tokenizer = system["tokenizer"]
+    structurer = system["structurer"]
     
-    # Timeout 120 detik karena model cold start/pemrosesan CPU HF gratisan bisa memakan waktu
-    response = requests.post(hf_url, files=files, data=data, timeout=120)
-    response.raise_for_status()
-    res_data = response.json()
-    
-    return (
-        res_data["score"],
-        res_data["job_struct"],
-        res_data["cv_struct"],
-        res_data["filename"],
-        res_data["raw_text"]
+    # 5. Prediksi relevansi
+    score, job_struct, cv_struct = predict_relevance(
+        model, 
+        tokenizer, 
+        structurer, 
+        job_description, 
+        clean_cv, 
+        device
     )
+    
+    return float(score), job_struct, cv_struct, filename, raw_text
 
 
 # --- Routes ---
@@ -199,8 +234,18 @@ def analyze_pdf(current_user_id):
         job_deskription = request.form.get("job_description")
         arr_result = []
 
+        # Ensure temp_pdf directory exists and save files
+        temp_pdf_dir = os.path.join(os.path.dirname(__file__), 'temp_pdf')
+        os.makedirs(temp_pdf_dir, exist_ok=True)
+        for file in files:
+            if file and file.filename:
+                file_path = os.path.join(temp_pdf_dir, os.path.basename(file.filename))
+                file.seek(0)
+                file.save(file_path)
+                file.seek(0)
+
         with ThreadPoolExecutor(max_workers=3) as executor:
-            results = [executor.submit(call_hf_analyze, file, file.filename, job_deskription) for file in files]
+            results = [executor.submit(call_local_analyze, file, file.filename, job_deskription) for file in files]
             for result in results:
                 score, job_struct, cv_struct, filename, raw_text = result.result()
                 print(f"score: {score}, job_struct: {job_struct}, cv_struct: {cv_struct}, filename: {filename}")
@@ -345,10 +390,19 @@ def upload_cv(current_user_id):
         if not job_description:
             return jsonify({'message': 'Job description is required'}), 400
         
+        # Ensure temp_pdf directory exists and save files
+        temp_pdf_dir = os.path.join(os.path.dirname(__file__), 'temp_pdf')
+        os.makedirs(temp_pdf_dir, exist_ok=True)
+        for file in valid_files:
+            file_path = os.path.join(temp_pdf_dir, os.path.basename(file.filename))
+            file.seek(0)
+            file.save(file_path)
+            file.seek(0)
+        
         # Process files using the new ThreadPoolExecutor and call_hf_analyze logic
         arr_result = []
         with ThreadPoolExecutor(max_workers=3) as executor:
-            results = [executor.submit(call_hf_analyze, file, file.filename, job_description) for file in valid_files]
+            results = [executor.submit(call_local_analyze, file, file.filename, job_description) for file in valid_files]
             for result in results:
                 try:
                     score, job_struct, cv_struct, filename, raw_text = result.result()
@@ -592,6 +646,68 @@ def get_rankings_compat(current_user_id, screening_id):
         import traceback
         traceback.print_exc()
         return jsonify({'message': 'Failed to fetch rankings', 'error': str(e)}), 500
+
+@app.route('/api/rankings/candidate', methods=['DELETE'])
+@token_required
+def delete_candidate(current_user_id):
+    try:
+        data = request.get_json() or {}
+        filename = data.get('filename')
+        category = data.get('category')
+        
+        if not filename:
+            return jsonify({'message': 'Filename is required'}), 400
+            
+        screenings_collection = db['screenings']
+        
+        from bson import ObjectId
+        is_obj_id = False
+        try:
+            if category:
+                ObjectId(category)
+                is_obj_id = True
+        except:
+            pass
+            
+        name_without_ext = filename.split(".")[0] if "." in filename else filename
+            
+        if is_obj_id:
+            # Delete from specific screening
+            screenings_collection.update_many(
+                {'_id': ObjectId(category), 'user_id': current_user_id},
+                {'$pull': {
+                    'cv_results': {'filename': filename},
+                    'result': {'name': name_without_ext}
+                }}
+            )
+        elif category:
+            # Delete from all screenings under this category
+            all_screenings = screenings_collection.find({'user_id': current_user_id})
+            for s in all_screenings:
+                desc = s.get('job_description', s.get('job_deskription', ''))
+                if get_job_category(desc) == category:
+                    screenings_collection.update_one(
+                        {'_id': s['_id']},
+                        {'$pull': {
+                            'cv_results': {'filename': filename},
+                            'result': {'name': name_without_ext}
+                        }}
+                    )
+        else:
+            # Delete from all screenings
+            screenings_collection.update_many(
+                {'user_id': current_user_id},
+                {'$pull': {
+                    'cv_results': {'filename': filename},
+                    'result': {'name': name_without_ext}
+                }}
+            )
+            
+        return jsonify({'status': 200, 'message': 'Candidate deleted successfully!'}), 200
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'message': 'Failed to delete candidate', 'error': str(e)}), 500
 
 @app.route('/api/logout', methods=['POST'])
 @token_required

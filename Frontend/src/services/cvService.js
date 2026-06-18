@@ -68,6 +68,18 @@ export const cvService = {
     const data = await response.json();
     return { success: response.ok, data, status: response.status };
   },
+
+  // Delete candidate from ranking
+  deleteCandidate: async (filename, category) => {
+    const response = await fetch(`${API_ENDPOINTS.GET_RANKINGS}/candidate`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+      body: JSON.stringify({ filename, category }),
+    });
+
+    const data = await response.json();
+    return { success: response.ok, data, status: response.status };
+  },
 };
 
 export default cvService;

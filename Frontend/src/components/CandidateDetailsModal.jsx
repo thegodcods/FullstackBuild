@@ -6,16 +6,14 @@ const CandidateDetailsModal = ({
   candidate,
   onClose,
   extractSkills,
-  extractExperience,
   jobDescRaw
 }) => {
   if (!candidate) return null;
 
   const pdfUrl = `${API_BASE_URL}/api/cvs/${encodeURIComponent(candidate.filename)}`;
 
-  // Extract skills and experience
+  // Extract skills
   const { required, matched, missing, candidateSkills } = extractSkills(jobDescRaw, candidate.text_preview);
-  const experienceText = extractExperience(candidate.text_preview);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fadeIn">
@@ -50,7 +48,7 @@ const CandidateDetailsModal = ({
             <div className="bg-[#121212] border border-white/5 rounded-xl p-5 flex flex-col items-center text-center">
               <span className="text-xs text-gray-400 mb-3">Overall Match Score</span>
               <div className="relative w-24 h-24 flex items-center justify-center mb-2">
-                <ScoreRing score={candidate.score} />
+                <ScoreRing score={candidate.score} size={80} strokeWidth={6} />
                 <span className="absolute text-xl font-bold text-[#7FE252]">{candidate.score}%</span>
               </div>
               <span className="text-[10px] text-gray-500 uppercase tracking-widest">Cosine Similarity</span>
@@ -58,10 +56,7 @@ const CandidateDetailsModal = ({
 
             {/* Experience & Details */}
             <div className="flex flex-col gap-3">
-              <div className="bg-[#121212] border border-white/5 rounded-xl p-3 flex justify-between items-center">
-                <span className="text-xs text-gray-400">Pengalaman</span>
-                <span className="text-xs font-medium text-white">{experienceText}</span>
-              </div>
+
               <div className="bg-[#121212] border border-white/5 rounded-xl p-3 flex flex-col gap-1">
                 <span className="text-xs text-gray-400">Nama File</span>
                 <span className="text-[10px] text-gray-300 truncate font-mono">{candidate.filename}</span>

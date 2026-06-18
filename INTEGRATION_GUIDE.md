@@ -300,23 +300,6 @@ Handles CV screening operations:
 - `text_processor.py` - NLP and text embedding
 - `clean_text.py` - Text preprocessing
 
-## 🚢 Deployment
-
-### Deploy Backend (Flask)
-```bash
-# Using Gunicorn for production
-gunicorn --bind 0.0.0.0:5000 app:app
-```
-
-### Deploy Frontend (React)
-```bash
-# Build production bundle
-npm run build
-
-# Deploy to hosting service (Vercel, Netlify, etc)
-npm install -g vercel
-vercel
-```
 
 ## 💡 Next Steps
 

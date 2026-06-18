@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Bell,
   ChevronDown,
   Users,
   Star,
@@ -10,7 +9,8 @@ import {
   ChevronLeft,
   Upload,
   LogOut,
-  Loader
+  Loader,
+  Trash2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import cvService from '../services/cvService';
@@ -160,18 +160,25 @@ const Ranking = ({ setCurrentPage }) => {
     return { required, candidateSkills, matched, missing };
   };
 
-  const extractExperience = (cvText) => {
-    if (!cvText) return "Tidak terdeteksi";
-    const text = cvText.toLowerCase();
-    const matchYears = text.match(/(\d+)\s*(?:years?|thn|tahun)\s*(?:of\s*)?(?:exp|experience|pengalaman)/i);
-    if (matchYears) {
-      return `${matchYears[1]} Tahun`;
+
+
+  const handleDeleteCandidate = async (filename) => {
+    if (!window.confirm(`Apakah Anda yakin ingin menghapus kandidat ${filename}?`)) {
+      return;
     }
-    const matchIndo = text.match(/(?:pengalaman|kerja)\s*(\d+)\s*tahun/i);
-    if (matchIndo) {
-      return `${matchIndo[1]} Tahun`;
+
+    try {
+      const screeningId = localStorage.getItem('screening_id');
+      const response = await cvService.deleteCandidate(filename, screeningId);
+
+      if (response.success) {
+        setReloadTrigger(prev => prev + 1);
+      } else {
+        alert('Gagal menghapus kandidat: ' + (response.data?.message || 'Coba lagi'));
+      }
+    } catch (err) {
+      alert('Error saat menghapus kandidat: ' + err.message);
     }
-    return "Ditinjau di CV";
   };
 
   // Hitung data untuk pagination
@@ -347,20 +354,19 @@ const Ranking = ({ setCurrentPage }) => {
           ) : (
             <div className="min-w-[1000px]">
               {/* Table Header */}
-              <div className="grid grid-cols-[60px_220px_160px_1fr_180px_100px_140px] gap-4 mb-4 text-xs text-gray-400 font-medium px-2">
+              <div className="grid grid-cols-[60px_220px_160px_1fr_180px_160px] gap-4 mb-4 text-xs text-gray-400 font-medium px-2">
                 <div>Rank</div>
                 <div>Candidate</div>
                 <div>Match Score</div>
                 <div>Matched Skills</div>
                 <div>Missing Skills</div>
-                <div>Experience</div>
                 <div>Actions</div>
               </div>
 
               {/* Table Rows */}
               <div className="flex flex-col gap-3">
                 {currentCandidates.map((candidate, index) => (
-                  <div key={candidate.id} className="grid grid-cols-[60px_220px_160px_1fr_180px_100px_140px] gap-4 items-center bg-[#121212] border border-white/5 rounded-xl p-3 hover:border-white/10 transition">
+                  <div key={candidate.id} className="grid grid-cols-[60px_220px_160px_1fr_180px_160px] gap-4 items-center bg-[#121212] border border-white/5 rounded-xl p-3 hover:border-white/10 transition">
 
                     {/* Rank */}
                     <div className="flex justify-center">
@@ -422,18 +428,20 @@ const Ranking = ({ setCurrentPage }) => {
                       })()}
                     </div>
 
-                    {/* Experience */}
-                    <div className="text-xs text-gray-300">
-                      {extractExperience(candidate.text_preview)}
-                    </div>
-
                     {/* Actions */}
-                    <div>
+                    <div className="flex gap-2">
                       <button
                         onClick={() => setSelectedCandidate(candidate)}
                         className="flex items-center justify-between w-full border border-white/20 text-xs px-3 py-2 rounded-lg hover:bg-white/5 transition"
                       >
                         View Details <ChevronRight size={14} className="text-gray-400" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteCandidate(candidate.filename)}
+                        className="flex items-center justify-center border border-red-500/30 text-red-400 text-xs p-2 rounded-lg hover:bg-red-500/10 hover:border-red-500/50 transition"
+                        title="Hapus Kandidat"
+                      >
+                        <Trash2 size={14} />
                       </button>
                     </div>
 
@@ -493,7 +501,6 @@ const Ranking = ({ setCurrentPage }) => {
         candidate={selectedCandidate}
         onClose={() => setSelectedCandidate(null)}
         extractSkills={extractSkills}
-        extractExperience={extractExperience}
         jobDescRaw={jobDescRaw}
       />
     </div >

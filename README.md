@@ -38,7 +38,6 @@ Proyek ini dibangun menggunakan kombinasi teknologi modern berikut:
 
 ### 🐳 DevOps & Infrastruktur
 * **Docker & Docker Compose** - Memudahkan instalasi dan menjalankan layanan backend, database MongoDB, serta pustaka sistem (Tesseract, Poppler) secara kontainerisasi.
-* **Hugging Face Spaces** - Platform alternatif untuk menjalankan deployment model/inferensi.
 
 ---
 

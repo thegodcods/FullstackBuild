@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import Navigation from './components/Navigation';
 import Menu from './pages/Menu';
