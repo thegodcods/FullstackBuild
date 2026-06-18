@@ -1,10 +1,10 @@
 # QuickHire - AI-Powered CV Screening & Candidate Ranking
 
 # By Team PJK-GM097
-APC444D6Y0064 - Ahmad Riki Andreas
-APC727D6Y0189 - David Richa Putra 
-APC260D6Y0382 - Aditya Ahfazh Firmansyah 
-APC224D6Y0400 - Rizard Alfarabi 
+* **APC444D6Y0064** - Ahmad Riki Andreas
+* **APC727D6Y0189** - David Richa Putra 
+* **APC260D6Y0382** - Aditya Ahfazh Firmansyah 
+* **APC224D6Y0400** - Rizard Alfarabi 
 ---
 
 ## 📝 Deskripsi Singkat Proyek
