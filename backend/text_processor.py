@@ -2,8 +2,13 @@ import re
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
-from pythainlp import word_tokenize
 from nltk.corpus import stopwords
+
+try:
+    from pythainlp import word_tokenize
+    HAS_PYTHAINLP = True
+except ImportError:
+    HAS_PYTHAINLP = False
 
 # 1. LOAD MODEL SEKALI SAJA (Global Scope)
 # Jangan load model di dalam fungsi cleaning!
@@ -124,14 +129,15 @@ def clean_cv_text(raw_text: str) -> str:
     
     # Step 5: PyThaiNLP Tokenize (Opsional, untuk validasi akhir)
     # Hanya lakukan jika teks tidak terlalu panjang agar tidak lambat
-    try:
-        if len(text.split()) < 1000: 
-            tokens = word_tokenize(text, engine='newmm')
-            # Buang token 1 huruf dan angka murni
-            filtered = [t for t in tokens if len(t) > 1 and not t.isdigit()]
-            text = " ".join(filtered)
-    except Exception:
-        pass # Fallback ke text biasa jika error
+    if HAS_PYTHAINLP:
+        try:
+            if len(text.split()) < 1000: 
+                tokens = word_tokenize(text, engine='newmm')
+                # Buang token 1 huruf dan angka murni
+                filtered = [t for t in tokens if len(t) > 1 and not t.isdigit()]
+                text = " ".join(filtered)
+        except Exception:
+            pass # Fallback ke text biasa jika error
         
     # Step 6: stopword dengan Sastrawi
     tokens = text.split()
